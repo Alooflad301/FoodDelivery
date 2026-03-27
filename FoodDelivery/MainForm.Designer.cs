@@ -17,6 +17,7 @@ namespace FoodDelivery
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.mnuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuLogin = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,12 +67,14 @@ namespace FoodDelivery
             this.mnuLogin.Name = "mnuLogin";
             this.mnuLogin.Size = new System.Drawing.Size(200, 22);
             this.mnuLogin.Text = "Сменить пользователя";
+            this.mnuLogin.Click += new System.EventHandler(this.mnuLogin_Click);
             // 
             // mnuExit
             // 
             this.mnuExit.Name = "mnuExit";
             this.mnuExit.Size = new System.Drawing.Size(200, 22);
             this.mnuExit.Text = "Выход";
+            this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
             // 
             // mnuCatalog
             // 
@@ -86,18 +89,21 @@ namespace FoodDelivery
             this.mnuProductCatalog.Name = "mnuProductCatalog";
             this.mnuProductCatalog.Size = new System.Drawing.Size(150, 22);
             this.mnuProductCatalog.Text = "Каталог блюд";
+            this.mnuProductCatalog.Click += new System.EventHandler(this.mnuProductCatalog_Click);
             // 
             // mnuCart
             // 
             this.mnuCart.Name = "mnuCart";
             this.mnuCart.Size = new System.Drawing.Size(65, 20);
             this.mnuCart.Text = "Корзина";
+            this.mnuCart.Click += new System.EventHandler(this.mnuCart_Click);
             // 
             // mnuOrderHistory
             // 
             this.mnuOrderHistory.Name = "mnuOrderHistory";
             this.mnuOrderHistory.Size = new System.Drawing.Size(110, 20);
             this.mnuOrderHistory.Text = "История заказов";
+            this.mnuOrderHistory.Click += new System.EventHandler(this.mnuOrderHistory_Click);
             // 
             // mnuAdministration
             // 
@@ -114,18 +120,21 @@ namespace FoodDelivery
             this.mnuUserManagement.Name = "mnuUserManagement";
             this.mnuUserManagement.Size = new System.Drawing.Size(152, 22);
             this.mnuUserManagement.Text = "Пользователи";
+            this.mnuUserManagement.Click += new System.EventHandler(this.mnuUserManagement_Click);
             // 
             // mnuDishManagement
             // 
             this.mnuDishManagement.Name = "mnuDishManagement";
             this.mnuDishManagement.Size = new System.Drawing.Size(152, 22);
             this.mnuDishManagement.Text = "Блюда";
+            this.mnuDishManagement.Click += new System.EventHandler(this.mnuDishManagement_Click);
             // 
             // mnuReports
             // 
             this.mnuReports.Name = "mnuReports";
             this.mnuReports.Size = new System.Drawing.Size(152, 22);
             this.mnuReports.Text = "Отчёты";
+            this.mnuReports.Click += new System.EventHandler(this.mnuReports_Click);
             // 
             // labelWelcome
             // 
@@ -166,6 +175,7 @@ namespace FoodDelivery
             this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "FoodDelivery — Система доставки еды";
@@ -177,15 +187,6 @@ namespace FoodDelivery
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
-            this.mnuLogin.Click += new System.EventHandler(this.mnuLogin_Click);
-            this.mnuExit.Click += new System.EventHandler(this.mnuExit_Click);
-            this.mnuProductCatalog.Click += new System.EventHandler(this.mnuProductCatalog_Click);
-            this.mnuCart.Click += new System.EventHandler(this.mnuCart_Click);
-            this.mnuOrderHistory.Click += new System.EventHandler(this.mnuOrderHistory_Click);
-            this.mnuUserManagement.Click += new System.EventHandler(this.mnuUserManagement_Click);
-            this.mnuDishManagement.Click += new System.EventHandler(this.mnuDishManagement_Click);
-            this.mnuReports.Click += new System.EventHandler(this.mnuReports_Click);
 
         }
 

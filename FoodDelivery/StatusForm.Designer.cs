@@ -15,22 +15,21 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StatusForm));
             this.label1 = new System.Windows.Forms.Label();
             this.cmbStatus = new System.Windows.Forms.ComboBox();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
-
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 13);
+            this.label1.Size = new System.Drawing.Size(80, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Новый статус:";
-
             // 
             // cmbStatus
             // 
@@ -40,7 +39,6 @@
             this.cmbStatus.Name = "cmbStatus";
             this.cmbStatus.Size = new System.Drawing.Size(170, 21);
             this.cmbStatus.TabIndex = 1;
-
             // 
             // btnApply
             // 
@@ -50,7 +48,6 @@
             this.btnApply.TabIndex = 2;
             this.btnApply.Text = "Применить";
             this.btnApply.UseVisualStyleBackColor = true;
-
             // 
             // btnCancel
             // 
@@ -60,7 +57,6 @@
             this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Отмена";
             this.btnCancel.UseVisualStyleBackColor = true;
-
             // 
             // StatusForm
             // 
@@ -72,6 +68,7 @@
             this.Controls.Add(this.cmbStatus);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "StatusForm";
@@ -79,6 +76,7 @@
             this.Text = "Изменить статус";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #region Компоненты

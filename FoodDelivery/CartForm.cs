@@ -12,7 +12,15 @@ namespace FoodDelivery
         public CartForm()
         {
             InitializeComponent();
+            HookButtons();
             UpdateGrid();
+        }
+
+        private void HookButtons()
+        {
+            btnIncrease.Click += btnIncrease_Click;
+            btnDecrease.Click += btnDecrease_Click;
+            btnOrder.Click += btnOrder_Click;
         }
 
         public class CartItem
@@ -21,65 +29,60 @@ namespace FoodDelivery
             public string DishName { get; set; }
             public double Price { get; set; }
             public int Quantity { get; set; }
-
             public double LineTotal => Price * Quantity;
         }
 
         public void AddDish(int dishId, string dishName, double price, int quantity)
         {
-            var exists = cartItems.Find(x => x.DishId == dishId);
-            if (exists != null)
-                exists.Quantity += quantity;
+            var item = cartItems.FirstOrDefault(x => x.DishId == dishId);
+            if (item == null)
+            {
+                cartItems.Add(new CartItem
+                {
+                    DishId = dishId,
+                    DishName = dishName,
+                    Price = price,
+                    Quantity = quantity
+                });
+            }
             else
-                cartItems.Add(new CartItem { DishId = dishId, DishName = dishName, Price = price, Quantity = quantity });
+            {
+                item.Quantity += quantity;
+            }
 
             UpdateGrid();
         }
 
         private void UpdateGrid()
         {
+            if (dgvCart == null || lblTotal == null) return;
+
             dgvCart.DataSource = null;
-            dgvCart.DataSource = cartItems;
+            dgvCart.DataSource = cartItems.Select(x => new
+            {
+                x.DishId,
+                x.DishName,
+                x.Price,
+                x.Quantity,
+                LineTotal = x.LineTotal
+            }).ToList();
 
-            double total = cartItems.Sum(x => x.LineTotal);
-            lblTotal.Text = $"Итого: {total:N2} ₽";
-        }
-
-        private void btnDecrease_Click(object sender, EventArgs e)
-        {
-            if (dgvCart.CurrentRow == null) return;
-
-            var item = (CartItem)dgvCart.CurrentRow.DataBoundItem;
-            if (item.Quantity > 1)
-                item.Quantity--;
-            else
-                cartItems.Remove(item);
-
-            UpdateGrid();
+            lblTotal.Text = "Итого: " + cartItems.Sum(x => x.LineTotal).ToString("N2") + " ₽";
         }
 
         private void btnIncrease_Click(object sender, EventArgs e)
         {
-            if (dgvCart.CurrentRow == null) return;
+            MessageBox.Show("Increase clicked");
+        }
 
-            var item = (CartItem)dgvCart.CurrentRow.DataBoundItem;
-            item.Quantity++;
-            UpdateGrid();
+        private void btnDecrease_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Decrease clicked");
         }
 
         private void btnOrder_Click(object sender, EventArgs e)
         {
-            if (CurrentUser.IDUser == 0 || cartItems.Count == 0)
-            {
-                MessageBox.Show("Корзина пуста или не авторизован.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // здесь логика добавления в Order + DishOrder
-            // см. пример InsertOrder ниже
-
-            MessageBox.Show("Заказ оформлен.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.Close(); // или очистить корзину
+            MessageBox.Show("Order clicked");
         }
     }
 }

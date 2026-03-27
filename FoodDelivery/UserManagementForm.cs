@@ -7,91 +7,131 @@ namespace FoodDelivery
 {
     public partial class UserManagementForm : Form
     {
-        private string connectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=FoodDelivery;Integrated Security=False";
+        private readonly string connectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=FoodDelivery;Integrated Security=False";
         private DataTable userTable = new DataTable();
 
         public UserManagementForm()
         {
             InitializeComponent();
+            HookEvents();
+            ConfigureGrid();
             LoadUsers();
+        }
+
+        private void HookEvents()
+        {
+            btnEditUser.Click += btnEditUser_Click;
+            btnDeleteUser.Click += btnDeleteUser_Click;
+            dgvUsers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvUsers.MultiSelect = false;
+            dgvUsers.ReadOnly = true;
+            dgvUsers.AllowUserToAddRows = false;
+            dgvUsers.AllowUserToDeleteRows = false;
+        }
+
+        private void ConfigureGrid()
+        {
+            if (dgvUsers != null)
+                dgvUsers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         private void LoadUsers()
         {
-            this.userTable.Clear();
+            userTable.Clear();
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                try
+                conn.Open();
+                string query = @"
+                    SELECT 
+                        u.IDUser, u.Name, u.Login, u.televon, u.Email, u.Addres, u.IDRole,
+                        r.Name AS RoleName
+                    FROM [User] u
+                    LEFT JOIN Role r ON u.IDRole = r.IDRole";
+
+                using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
                 {
-                    conn.Open();
-
-                    string query = @"
-                        SELECT 
-                            u.IDUser, u.Name, u.Login, u.televon, u.Email, u.Addres,
-                            r.Name AS RoleName
-                        FROM [User] u
-                            LEFT JOIN Role r ON u.IDRole = r.IDRole";
-
-                    SqlDataAdapter da = new SqlDataAdapter(query, conn);
                     da.Fill(userTable);
-
                     dgvUsers.DataSource = userTable;
-
-                    // прячем IDRole, если нужно, но в реальности лучше отобразить
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка загрузки пользователей: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
+        private DataGridViewRow GetSelectedRow()
+        {
+            if (dgvUsers.SelectedRows.Count > 0)
+                return dgvUsers.SelectedRows[0];
+
+            if (dgvUsers.CurrentRow != null && dgvUsers.CurrentRow.Index >= 0)
+                return dgvUsers.CurrentRow;
+
+            return null;
+        }
+
         private void btnEditUser_Click(object sender, EventArgs e)
         {
-            if (dgvUsers.CurrentRow == null) return;
+            try
+            {
+                var row = GetSelectedRow();
+                if (row == null)
+                {
+                    MessageBox.Show("Выберите пользователя в таблице.");
+                    return;
+                }
 
-            int id = Convert.ToInt32(dgvUsers.CurrentRow.Cells["IDUser"].Value);
-            string name = dgvUsers.CurrentRow.Cells["Name"].Value.ToString();
-            string login = dgvUsers.CurrentRow.Cells["Login"].Value.ToString();
-            string phone = dgvUsers.CurrentRow.Cells["televon"].Value?.ToString() ?? "";
-            string email = dgvUsers.CurrentRow.Cells["Email"].Value?.ToString() ?? "";
-            string addr = dgvUsers.CurrentRow.Cells["Addres"].Value?.ToString() ?? "";
+                int id = Convert.ToInt32(row.Cells["IDUser"].Value);
+                string name = row.Cells["Name"].Value?.ToString() ?? "";
+                string login = row.Cells["Login"].Value?.ToString() ?? "";
+                string phone = row.Cells["televon"].Value?.ToString() ?? "";
+                string email = row.Cells["Email"].Value?.ToString() ?? "";
+                string addr = row.Cells["Addres"].Value?.ToString() ?? "";
+                int roleId = row.Cells["IDRole"].Value == DBNull.Value ? 0 : Convert.ToInt32(row.Cells["IDRole"].Value);
 
-            // форма редактирования UserEditForm (можно сделать как CartForm)
-            // UserEditForm edit = new UserEditForm(id, name, login, phone, email, addr);
-            // edit.ShowDialog();
-            // LoadUsers(); // обновить таблицу
+                MessageBox.Show(
+                    $"Редактирование:\n{id}\n{name}\n{login}\n{phone}\n{email}\n{addr}\nRole: {roleId}",
+                    "Проверка");
+
+                // Здесь позже можешь открыть форму редактирования
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnDeleteUser_Click(object sender, EventArgs e)
         {
-            if (dgvUsers.CurrentRow == null) return;
-
-            int id = Convert.ToInt32(dgvUsers.CurrentRow.Cells["IDUser"].Value);
-
-            // в твоих требованиях удаление разрешено, но можно добавить подтверждение
-            if (MessageBox.Show("Удалить пользователя?", "Подтвердите", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            try
             {
-                try
+                var row = GetSelectedRow();
+                if (row == null)
                 {
-                    using (SqlConnection conn = new SqlConnection(connectionString))
-                    {
-                        conn.Open();
+                    MessageBox.Show("Выберите пользователя в таблице.");
+                    return;
+                }
 
-                        string cmdText = "DELETE FROM [User] WHERE IDUser = @IDUser";
-                        SqlCommand cmd = new SqlCommand(cmdText, conn);
+                int id = Convert.ToInt32(row.Cells["IDUser"].Value);
+
+                if (MessageBox.Show("Удалить пользователя?", "Подтвердите",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand("DELETE FROM [User] WHERE IDUser = @IDUser", conn))
+                    {
                         cmd.Parameters.AddWithValue("@IDUser", id);
                         cmd.ExecuteNonQuery();
-
-                        MessageBox.Show("Пользователь удалён.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        LoadUsers();
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка удаления: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+
+                LoadUsers();
+                MessageBox.Show("Пользователь удалён.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

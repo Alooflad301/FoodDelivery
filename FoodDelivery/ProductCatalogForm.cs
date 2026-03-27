@@ -57,14 +57,13 @@ namespace FoodDelivery
 
         private void ProductCatalogForm_Load(object sender, EventArgs e)
         {
-            // подписка для визуального F3: выделить Price > 1000
-            dgvDishes.CellFormatting += dgvDishes_CellFormatting;
+            dgvDishes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvDishes.MultiSelect = false;
+            dgvDishes.ReadOnly = true;
+            dgvDishes.AllowUserToAddRows = false;
+            dgvDishes.AllowUserToDeleteRows = false;
 
-            // для ролей Клиент/Менеджер возможно скрытие кнопок редактирования
-            if (CurrentUser.IDRole == 3) // Клиент
-            {
-                // например, скрыть btnEditDish, btnAddDish
-            }
+            dgvDishes.ClearSelection();
         }
 
         private void dgvDishes_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -94,17 +93,28 @@ namespace FoodDelivery
 
         private void btnAddToCart_Click(object sender, EventArgs e)
         {
-            if (dgvDishes.CurrentRow == null)
-                return;
+            try
+            {
+                if (dgvDishes.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Выберите блюдо в таблице.");
+                    return;
+                }
 
-            int dishId = Convert.ToInt32(dgvDishes.CurrentRow.Cells["IDDish"].Value);
-            string dishName = dgvDishes.CurrentRow.Cells["Name"].Value.ToString();
-            double price = Convert.ToDouble(dgvDishes.CurrentRow.Cells["Pric"].Value);
+                var row = dgvDishes.SelectedRows[0];
 
-            // передать в корзину или открыть форму корзины
-            CartForm cart = new CartForm();
-            cart.AddDish(dishId, dishName, price, 1);
-            cart.Show();
+                int dishId = Convert.ToInt32(row.Cells["IDDish"].Value);
+                string dishName = row.Cells["Name"].Value?.ToString() ?? "";
+                double price = Convert.ToDouble(row.Cells["Pric"].Value);
+
+                CartForm cart = new CartForm();
+                cart.AddDish(dishId, dishName, price, 1);
+                cart.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

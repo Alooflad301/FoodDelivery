@@ -15,6 +15,7 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OrderManagementForm));
             this.dgvOrders = new System.Windows.Forms.DataGridView();
             this.dgvOrderDetails = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
@@ -92,6 +93,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dgvOrderDetails);
             this.Controls.Add(this.dgvOrders);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OrderManagementForm";
             this.Text = "Управление заказами";
             ((System.ComponentModel.ISupportInitialize)(this.dgvOrders)).EndInit();
