@@ -91,6 +91,7 @@
             this.Controls.Add(this.dgvDishes);
             this.Name = "ProductCatalogForm";
             this.Text = "Каталог блюд";
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             this.btnAddToCart.Click += new System.EventHandler(this.btnAddToCart_Click);
             this.Load += new System.EventHandler(this.ProductCatalogForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDishes)).EndInit();
